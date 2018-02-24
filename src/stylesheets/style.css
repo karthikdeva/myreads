@@ -1,0 +1,105 @@
+.card-block {
+  -webkit-box-flex: 1;
+  -webkit-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+  padding: 1.25rem; }
+
+.navbar {
+  margin-bottom: 15px;
+  background: #563d7c; }
+
+.page {
+  padding-top: 56px; }
+
+.open-search {
+  position: fixed;
+  right: 25px;
+  bottom: 25px;
+  display: block;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: #2e7d32;
+  background-image: url("../icons/add.svg");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 28px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
+  font-size: 0; }
+
+/* search page */
+.search-books-input-wrapper {
+  flex: 1;
+  background: #e9e; }
+
+.search-books-bar {
+  position: fixed;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 5;
+  display: flex;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 0 6px rgba(0, 0, 0, 0.23); }
+  .search-books-bar input {
+    width: 100%;
+    padding: 15px 10px;
+    font-size: 1.25em;
+    border: none;
+    outline: none; }
+  .search-books-bar .close-search {
+    display: block;
+    top: 20px;
+    left: 15px;
+    width: 50px;
+    height: 53px;
+    background: white;
+    background-image: url("../icons/arrow-back.svg");
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: 28px;
+    font-size: 0; }
+
+.search-books-results {
+  padding: 80px 10px 20px; }
+
+.card {
+  padding: 10px 0 0 0;
+  text-align: center;
+  margin-bottom: 15px;
+  margin-top: 15px; }
+  .card img {
+    max-width: 160px;
+    max-height: 180px; }
+  .card .card-title {
+    font-size: 18px; }
+  .card .status-text {
+    padding-right: 5px;
+    position: absolute;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #563d7c;
+    background-image: url(../icons/arrow-drop-down.svg);
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 20px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23); }
+  .card select {
+    opacity: 0;
+    width: 40px;
+    height: 40px;
+    float: right;
+    cursor: pointer; }
+  .card .card-block {
+    text-align: left;
+    margin-top: 10px;
+    border-top: 1px solid #ddd; }
+
+.book-self-section {
+  padding: 15px 0; }
+  .book-self-section .book-self-title {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 15px;
+    font-size: 20px; }
