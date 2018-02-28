@@ -17,12 +17,12 @@ class App extends Component {
     allBooks: [],
     showingBooks: [],
     bookCategoris: [],
-    shelfChangers: utils.ShelveOptions
+    shelfOptions: utils.ShelveOptions
   }
 
   componentDidMount() {
     this.getAllBooks();
-  } // componentDidMount
+  }
 
   getAllBooks() {
     BooksAPI
@@ -30,10 +30,11 @@ class App extends Component {
       .then(books => {
         this.groupByCategory(books);
       })
-  } // end of getAllBooks
+
+  }
 
   groupByCategory(allBooks) {
-    let bookCategoris = {};
+    const bookCategoris = {};
     allBooks.map((book) => {
       if (!bookCategoris.hasOwnProperty(book.shelf)) {
         bookCategoris[book.shelf] = {
@@ -55,18 +56,28 @@ class App extends Component {
     } // end of for loop
 
     this.setState(state => ({allBooks: allBooks, bookCategoris: bookShelves}))
-  } // end of groupByCategory
+  }
+
+  /*
+    ** Find books based on title or Author name
+    ** query
+  */
 
   filterBooks(query) {
-    console.log(query);
     if (query.length) {
-      const match = new RegExp(escapeRegExp(query), 'i');
-      this.setState(state => ({
-        showingBooks: this
-          .state
-          .allBooks
-          .filter((book) => match.test(book.title))
-      }))
+      // const match = new RegExp(escapeRegExp(query), 'i');
+      BooksAPI
+        .search(escapeRegExp(query))
+        .then(allBooks => {
+          console.log(allBooks);
+          let filterdBooks = allBooks.hasOwnProperty('error')
+            ? []
+            : allBooks;
+          this.setState(state => ({showingBooks: filterdBooks}))
+
+        })
+      // this .state .allBooks .filter((book) => match.test(book.title) &&
+      // this.state.shelfOptions.filter(shelf => shelf.value === book.shelf))
 
     } else {
       this.setState(state => ({showingBooks: []}))
@@ -92,7 +103,7 @@ class App extends Component {
             <MainHeader/>
             <Shelves
               bookCategoris={this.state.bookCategoris}
-              shelfChangers={this.state.shelfChangers}
+              shelfOptions={this.state.shelfOptions}
               handleStatusChange={(key, book) => this.handleStatusChange(key, book)}/>
             <Link to="/search" className="open-search"></Link>
           </div>
@@ -100,14 +111,17 @@ class App extends Component {
         <Route
           exact
           path="/search"
-          render={(props) => (<SearchBooks
+          render={({
+          history
+        }, props) => (<SearchBooks
+          history={history}
           books={this.state.showingBooks}
-          shelfChangers={this.state.shelfChangers}
+          shelfOptions={this.state.shelfOptions}
           handleQueryFilter={(value) => this.filterBooks(value)}
           handleStatusChange={(key, book) => this.handleStatusChange(key, book)}/>)}/>
       </div>
-    ); // end of render return
-  } // end of render
-} // end of App
+    );
+  }
+}
 
 export default App;
