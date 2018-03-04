@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
 import {Route, Link} from 'react-router-dom'
-import escapeRegExp from "escape-string-regexp"
 
 // Application Css
 import './stylesheets/style.css';
@@ -14,17 +13,16 @@ import * as utils from './utils/CommonUtils'
 
 class App extends Component {
   state = {
-    allBooks: [],
-    showingBooks: [],
-    bookCategoris: [],
-    shelfOptions: utils.ShelveOptions
+    myBooks: [],
+    myBookShelves: [],
+    shelfOptions: utils.MyBookShelves
   }
 
   componentDidMount() {
-    this.getAllBooks();
+    this.getAllMyBooks();
   }
 
-  getAllBooks() {
+  getAllMyBooks() {
     BooksAPI
       .getAll()
       .then(books => {
@@ -33,68 +31,56 @@ class App extends Component {
 
   }
 
-  groupByCategory(allBooks) {
-    const bookCategoris = {};
-    allBooks.map((book) => {
-      if (!bookCategoris.hasOwnProperty(book.shelf)) {
-        bookCategoris[book.shelf] = {
+  //Group the book by it shelf status
+  groupByCategory(myBooks, selectedBook = {}, selectedShelf = '') {
+    const myBookShelves = {};
+    myBooks.filter((book) => {
+      book.options = this.state.shelfOptions;
+
+      if (selectedBook.id === book.id) {
+        book.shelf = selectedShelf;
+      }
+      if (!myBookShelves.hasOwnProperty(book.shelf)) {
+        myBookShelves[book.shelf] = {
           title: utils.camelCaseToSentanceCase(book.shelf),
+          id: book.shelf,
           books: [book]
         }
       } else {
-        bookCategoris[book.shelf]
+        myBookShelves[book.shelf]
           .books
           .push(book);
       }
-      return bookCategoris
+      return myBookShelves
     });
 
     // converting key-value pair objects to book shelves array
     let bookShelves = [];
-    for (let shelf of Object.keys(bookCategoris)) {
-      bookShelves.push(bookCategoris[shelf]);
-    } // end of for loop
-
-    this.setState(state => ({allBooks: allBooks, bookCategoris: bookShelves}))
-  }
-
-  /*
-    ** Find books based on title or Author name
-    ** query
-  */
-
-  filterBooks(query) {
-    if (query.length) {
-      // const match = new RegExp(escapeRegExp(query), 'i');
-      BooksAPI
-        .search(escapeRegExp(query))
-        .then(allBooks => {
-          console.log(allBooks);
-          let filterdBooks = allBooks.hasOwnProperty('error')
-            ? []
-            : allBooks;
-          this.setState(state => ({showingBooks: filterdBooks}))
-
-        })
-      // this .state .allBooks .filter((book) => match.test(book.title) &&
-      // this.state.shelfOptions.filter(shelf => shelf.value === book.shelf))
-
-    } else {
-      this.setState(state => ({showingBooks: []}))
+    for (let shelf of Object.keys(myBookShelves)) {
+      bookShelves.push(myBookShelves[shelf]);
     }
+
+    this.setState(state => ({myBooks: myBooks, myBookShelves: bookShelves}))
   }
 
   handleStatusChange = ((shelf, book) => {
     BooksAPI
       .update(book, shelf)
       .then(books => {
-        this.getAllBooks();
+        this.groupByCategory(this.state.myBooks, book, shelf);
       })
   }); // end of handleStatusChange
+
+
+  /*
+   I tried extacting the routes in a separate file. but i couldn't do that
+   Need help on extarcting routes in a separate file.
+  */
 
   render() {
     return (
       <div className="app">
+
         <Route
           exact
           path="/"
@@ -102,8 +88,8 @@ class App extends Component {
           <div className="container-fluid">
             <MainHeader/>
             <Shelves
-              bookCategoris={this.state.bookCategoris}
-              shelfOptions={this.state.shelfOptions}
+              myBookShelves={this.state.myBookShelves}
+              myBooks={this.state.myBooks}
               handleStatusChange={(key, book) => this.handleStatusChange(key, book)}/>
             <Link to="/search" className="open-search"></Link>
           </div>
@@ -115,9 +101,7 @@ class App extends Component {
           history
         }, props) => (<SearchBooks
           history={history}
-          books={this.state.showingBooks}
-          shelfOptions={this.state.shelfOptions}
-          handleQueryFilter={(value) => this.filterBooks(value)}
+          myBooks={this.state.myBooks}
           handleStatusChange={(key, book) => this.handleStatusChange(key, book)}/>)}/>
       </div>
     );
